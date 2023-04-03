@@ -1,1 +1,11 @@
-src/golang/main
+.env
+*.dll
+*.exe
+*.exe~
+*.dylib
+*.out
+*.so
+*.test
+build/
+output/
+binary/

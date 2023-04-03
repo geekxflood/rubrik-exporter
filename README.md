@@ -1,5 +1,11 @@
 # Rubrik Prometheus Agent
 
+## Disclaimer
+
+**This project is not officially supported by Rubrik.**
+
+The original source code for this project can be found [here](https://github.com/rubrikinc/rubrik-client-for-prometheus).
+
 ## :hammer: Installation
 
 For installation instructions, see the [Quick Start Guide](quickstart.md)
