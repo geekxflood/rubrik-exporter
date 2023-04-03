@@ -16,11 +16,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/geekxflood/rubrik-exporter/src/jobs"
+	"github.com/geekxflood/rubrik-exporter/src/livemount"
+	"github.com/geekxflood/rubrik-exporter/src/objectprotection"
+	"github.com/geekxflood/rubrik-exporter/src/stats"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/rubrikinc/rubrik-client-for-prometheus/src/golang/jobs"
-	"github.com/rubrikinc/rubrik-client-for-prometheus/src/golang/livemount"
-	"github.com/rubrikinc/rubrik-client-for-prometheus/src/golang/objectprotection"
-	"github.com/rubrikinc/rubrik-client-for-prometheus/src/golang/stats"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
