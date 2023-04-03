@@ -3,8 +3,9 @@ package livemount
 import (
 	"log"
 	"time"
-	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
 var (
@@ -30,9 +31,9 @@ func init() {
 
 // GetMssqlLiveMountAges ...
 func GetMssqlLiveMountAges(rubrik *rubrikcdm.Credentials, clusterName string) {
-	mountData,err := rubrik.Get("v1","/mssql/db/mount", 60) // get our mssql live mount summary
+	mountData, err := rubrik.Get("v1", "/mssql/db/mount", 60) // get our mssql live mount summary
 	if err != nil {
-		log.Printf("Error from livemount.GetMssqlLiveMountAges: ",err)
+		log.Printf("Error from livemount.GetMssqlLiveMountAges: %v", err)
 		return
 	}
 	for _, v := range mountData.(map[string]interface{})["data"].([]interface{}) {

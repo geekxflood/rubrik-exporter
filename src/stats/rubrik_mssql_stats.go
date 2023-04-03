@@ -3,8 +3,9 @@ package stats
 import (
 	"log"
 	"strconv"
-	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
 var (
@@ -43,9 +44,9 @@ func init() {
 
 // GetMssqlCapacityStats ...
 func GetMssqlCapacityStats(rubrik *rubrikcdm.Credentials, clusterName string) {
-	reportData,err := rubrik.Get("internal","/report?report_template=ObjectProtectionSummary&report_type=Canned", 60) // get our object protection summary report
+	reportData, err := rubrik.Get("internal", "/report?report_template=ObjectProtectionSummary&report_type=Canned", 60) // get our object protection summary report
 	if err != nil {
-		log.Printf("Error from stats.GetMssqlCapacityStats: ",err)
+		log.Printf("Error from stats.GetMssqlCapacityStats: %v", err)
 		return
 	}
 	reports := reportData.(map[string]interface{})["data"].([]interface{})
@@ -58,9 +59,9 @@ func GetMssqlCapacityStats(rubrik *rubrikcdm.Credentials, clusterName string) {
 	}
 	for {
 		hasMore := true
-		tableData,err := rubrik.Post("internal","/report/"+reportID.(string)+"/table",body, 60) // get our first page of data for the report
+		tableData, err := rubrik.Post("internal", "/report/"+reportID.(string)+"/table", body, 60) // get our first page of data for the report
 		if err != nil {
-			log.Printf("Error from stats.GetMssqlCapacityStats: ",err)
+			log.Printf("Error from stats.GetMssqlCapacityStats: %v", err)
 			return
 		}
 		dataGrid := tableData.(map[string]interface{})["dataGrid"].([]interface{})
@@ -68,8 +69,8 @@ func GetMssqlCapacityStats(rubrik *rubrikcdm.Credentials, clusterName string) {
 		cursor := tableData.(map[string]interface{})["cursor"]
 		columns := tableData.(map[string]interface{})["columns"].([]interface{})
 		for _, v := range dataGrid {
-			thisObjectID, thisObjectName, thisLocation := "null","null","null"
-			thisLocalStorage, thisArchiveStorage := 0.0,0.0
+			thisObjectID, thisObjectName, thisLocation := "null", "null", "null"
+			thisLocalStorage, thisArchiveStorage := 0.0, 0.0
 			for i := 0; i < len(columns); i++ {
 				switch columns[i] {
 				case "ObjectId":
@@ -81,9 +82,9 @@ func GetMssqlCapacityStats(rubrik *rubrikcdm.Credentials, clusterName string) {
 				case "Location":
 					thisLocation = v.([]interface{})[i].(string)
 				case "LocalStorage":
-					thisLocalStorage, _ = strconv.ParseFloat(v.([]interface{})[i].(string),64)
+					thisLocalStorage, _ = strconv.ParseFloat(v.([]interface{})[i].(string), 64)
 				case "ArchiveStorage":
-					thisArchiveStorage, _ = strconv.ParseFloat(v.([]interface{})[i].(string),64)
+					thisArchiveStorage, _ = strconv.ParseFloat(v.([]interface{})[i].(string), 64)
 				}
 			}
 			rubrikMssqlDbCapacityLocalUsed.WithLabelValues(
@@ -101,7 +102,7 @@ func GetMssqlCapacityStats(rubrik *rubrikcdm.Credentials, clusterName string) {
 			return
 		} else {
 			body = map[string]interface{}{
-				"limit": 1000,
+				"limit":  1000,
 				"cursor": cursor,
 				"requestFilters": map[string]interface{}{
 					"objectType": "Mssql",

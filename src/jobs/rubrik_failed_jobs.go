@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
@@ -58,23 +59,23 @@ func init() {
 func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 	clusterVersion, err := rubrik.ClusterVersion()
 	if err != nil {
-		log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+		log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 		return
 	}
 	clusterMajorVersion, err := strconv.ParseInt(strings.Split(clusterVersion, ".")[0], 10, 64)
 	if err != nil {
-		log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+		log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 		return
 	}
 	clusterMinorVersion, err := strconv.ParseInt(strings.Split(clusterVersion, ".")[1], 10, 64)
 	if err != nil {
-		log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+		log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 		return
 	}
 	if (clusterMajorVersion == 5 && clusterMinorVersion < 2) || clusterMajorVersion < 5 { // cluster version is older than 5.1
 		eventData, err := rubrik.Get("internal", "/event_series?status=Failure&event_type=Backup&object_type=Mssql", 60)
 		if err != nil {
-			log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+			log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 			return
 		}
 		if eventData != nil || eventData.(map[string]interface{})["data"] != nil {
@@ -82,7 +83,7 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 				thisEventSeriesID := v.(map[string]interface{})["eventSeriesId"]
 				eventSeriesData, err := rubrik.Get("internal", "/event_series/"+thisEventSeriesID.(string), 60)
 				if err != nil {
-					log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+					log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 					return
 				}
 				hasFailedEvent := false
@@ -92,7 +93,7 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 						hasFailedEvent = true
 					}
 				}
-				if hasFailedEvent == true {
+				if hasFailedEvent {
 					thisObjectName := v.(map[string]interface{})["objectInfo"].(map[string]interface{})["objectName"]
 					thisObjectID := v.(map[string]interface{})["objectInfo"].(map[string]interface{})["objectId"]
 					thisLocation := v.(map[string]interface{})["location"]
@@ -138,7 +139,7 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 		var yesterday = time.Now().AddDate(0, 0, -1).Format("2006-01-02T15:04:05.000Z")
 		eventData, err := rubrik.Get("v1", "/event/latest?limit=9999&event_status=Failure&event_type=Backup&object_type=Mssql&before_date="+yesterday, 60)
 		if err != nil {
-			log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+			log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 			return
 		}
 		if eventData != nil || eventData.(map[string]interface{})["data"] != nil {
@@ -146,7 +147,7 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 				thisEventSeriesID := v.(map[string]interface{})["latestEvent"].(map[string]interface{})["eventSeriesId"]
 				eventSeriesData, err := rubrik.Get("v1", "/event_series/"+thisEventSeriesID.(string), 60)
 				if err != nil {
-					log.Printf("Error from jobs.GetMssqlFailedJobs: ", err)
+					log.Printf("Error from jobs.GetMssqlFailedJobs: %v", err)
 					return
 				}
 				hasFailedEvent := false
@@ -156,7 +157,7 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 						hasFailedEvent = true
 					}
 				}
-				if hasFailedEvent == true {
+				if hasFailedEvent {
 					thisObjectName := eventSeriesData.(map[string]interface{})["objectName"]
 					thisObjectID := eventSeriesData.(map[string]interface{})["objectId"]
 					thisLocation := eventSeriesData.(map[string]interface{})["location"]
@@ -200,27 +201,28 @@ func GetMssqlFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 		}
 	}
 }
+
 // GetVmwareVMFailedJobs ...
 func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 	clusterVersion, err := rubrik.ClusterVersion()
 	if err != nil {
-		log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+		log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 		return
 	}
 	clusterMajorVersion, err := strconv.ParseInt(strings.Split(clusterVersion, ".")[0], 10, 64)
 	if err != nil {
-		log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+		log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 		return
 	}
 	clusterMinorVersion, err := strconv.ParseInt(strings.Split(clusterVersion, ".")[1], 10, 64)
 	if err != nil {
-		log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+		log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 		return
 	}
 	if (clusterMajorVersion == 5 && clusterMinorVersion < 2) || clusterMajorVersion < 5 { // cluster version is older than 5.1
 		eventData, err := rubrik.Get("internal", "/event_series?status=Failure&event_type=Backup&object_type=VmwareVm", 60)
 		if err != nil {
-			log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+			log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 			return
 		}
 		if eventData != nil || eventData.(map[string]interface{})["data"] != nil {
@@ -228,7 +230,7 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 				thisEventSeriesID := v.(map[string]interface{})["eventSeriesId"]
 				eventSeriesData, err := rubrik.Get("internal", "/event_series/"+thisEventSeriesID.(string), 60)
 				if err != nil {
-					log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+					log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 					return
 				}
 				hasFailedEvent := false
@@ -238,7 +240,7 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 						hasFailedEvent = true
 					}
 				}
-				if hasFailedEvent == true {
+				if hasFailedEvent {
 					thisObjectName := v.(map[string]interface{})["objectInfo"].(map[string]interface{})["objectName"]
 					thisObjectID := v.(map[string]interface{})["objectInfo"].(map[string]interface{})["objectId"]
 					thisLocation := v.(map[string]interface{})["location"]
@@ -284,7 +286,7 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 		var yesterday = time.Now().AddDate(0, 0, -1).Format("2006-01-02T15:04:05.000Z")
 		eventData, err := rubrik.Get("v1", "/event/latest?limit=9999&event_status=Failure&event_type=Backup&object_type=VmwareVm&before_date="+yesterday, 60)
 		if err != nil {
-			log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+			log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 			return
 		}
 		if eventData != nil || eventData.(map[string]interface{})["data"] != nil {
@@ -292,7 +294,7 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 				thisEventSeriesID := v.(map[string]interface{})["latestEvent"].(map[string]interface{})["eventSeriesId"]
 				eventSeriesData, err := rubrik.Get("v1", "/event_series/"+thisEventSeriesID.(string), 60)
 				if err != nil {
-					log.Printf("Error from jobs.GetVmwareVmFailedJobs: ", err)
+					log.Printf("Error from jobs.GetVmwareVmFailedJobs: %v", err)
 					return
 				}
 				hasFailedEvent := false
@@ -302,7 +304,7 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 						hasFailedEvent = true
 					}
 				}
-				if hasFailedEvent == true {
+				if hasFailedEvent {
 					thisObjectName := eventSeriesData.(map[string]interface{})["objectName"]
 					thisObjectID := eventSeriesData.(map[string]interface{})["objectId"]
 					thisLocation := eventSeriesData.(map[string]interface{})["location"]
@@ -332,15 +334,15 @@ func GetVmwareVmFailedJobs(rubrik *rubrikcdm.Credentials, clusterName string) {
 					}
 					thisEventDate := eventSeriesData.(map[string]interface{})["startTime"]
 					rubrikVmwareVmFailedJob.WithLabelValues(
-							clusterName,
-							thisObjectName.(string),
-							thisObjectID.(string),
-							thisLocation.(string),
-							thisStartTime,
-							thisEndTime,
-							thisLogicalSize,
-							thisDuration,
-							thisEventDate.(string)).Set(1)
+						clusterName,
+						thisObjectName.(string),
+						thisObjectID.(string),
+						thisLocation.(string),
+						thisStartTime,
+						thisEndTime,
+						thisLogicalSize,
+						thisDuration,
+						thisEventDate.(string)).Set(1)
 				}
 			}
 		}

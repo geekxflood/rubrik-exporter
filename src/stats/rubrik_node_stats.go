@@ -2,8 +2,9 @@ package stats
 
 import (
 	"log"
-	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
 var (
@@ -60,42 +61,42 @@ func init() {
 
 // GetNodeStats ...
 func GetNodeStats(rubrik *rubrikcdm.Credentials, clusterName string) {
-	nodes,err := rubrik.Get("internal","/node", 60)
+	nodes, err := rubrik.Get("internal", "/node", 60)
 	if err != nil {
-		log.Printf("Error from stats.GetNodeStats: ",err)
+		log.Printf("Error from stats.GetNodeStats: %v", err)
 		return
 	}
 	for _, v := range nodes.(map[string]interface{})["data"].([]interface{}) {
-		thisNode := (v.(interface{}).(map[string]interface{})["id"])
-		nodeDetail,err := rubrik.Get("internal","/node/"+thisNode.(string), 60)
+		thisNode := (v.(map[string]interface{})["id"])
+		nodeDetail, err := rubrik.Get("internal", "/node/"+thisNode.(string), 60)
 		if err != nil {
-			log.Printf("Error from stats.GetNodeStats: ",err)
+			log.Printf("Error from stats.GetNodeStats: %v", err)
 			return
 		}
 		thisNodeStatus := nodeDetail.(map[string]interface{})["status"]
 		switch thisNodeStatus {
 		case "OK":
-			rubrikNodeStatus.WithLabelValues(clusterName,thisNode.(string)).Set(1)
+			rubrikNodeStatus.WithLabelValues(clusterName, thisNode.(string)).Set(1)
 		default:
-			rubrikNodeStatus.WithLabelValues(clusterName,thisNode.(string)).Set(0)
+			rubrikNodeStatus.WithLabelValues(clusterName, thisNode.(string)).Set(0)
 		}
 
-		nodeStats,err := rubrik.Get("internal","/node/"+thisNode.(string)+"/stats?range=-6min", 60)
+		nodeStats, err := rubrik.Get("internal", "/node/"+thisNode.(string)+"/stats?range=-6min", 60)
 		if err != nil {
-			log.Printf("Error from stats.GetNodeStats: ",err)
+			log.Printf("Error from stats.GetNodeStats: %v", err)
 			return
 		}
 		// get cpu stat
 		cpuData := nodeStats.(map[string]interface{})["cpuStat"].([]interface{})
-		thisCPUStat := cpuData[len(cpuData) - 1].(map[string]interface{})["stat"].(float64) / 100
-		rubrikNodeCPU.WithLabelValues(clusterName,thisNode.(string)).Set(thisCPUStat)
+		thisCPUStat := cpuData[len(cpuData)-1].(map[string]interface{})["stat"].(float64) / 100
+		rubrikNodeCPU.WithLabelValues(clusterName, thisNode.(string)).Set(thisCPUStat)
 		// get network throughput stats
 		networkData := nodeStats.(map[string]interface{})["networkStat"]
 		byteRxData := networkData.(map[string]interface{})["bytesReceived"].([]interface{})
-		thisRxStat := byteRxData[len(byteRxData) - 1].(map[string]interface{})["stat"].(float64)
-		rubrikNodeNetworkReceived.WithLabelValues(clusterName,thisNode.(string)).Set(thisRxStat)
+		thisRxStat := byteRxData[len(byteRxData)-1].(map[string]interface{})["stat"].(float64)
+		rubrikNodeNetworkReceived.WithLabelValues(clusterName, thisNode.(string)).Set(thisRxStat)
 		byteTxData := networkData.(map[string]interface{})["bytesTransmitted"].([]interface{})
-		thisTxStat := byteTxData[len(byteTxData) - 1].(map[string]interface{})["stat"].(float64)
-		rubrikNodeNetworkTransmitted.WithLabelValues(clusterName,thisNode.(string)).Set(thisTxStat)
+		thisTxStat := byteTxData[len(byteTxData)-1].(map[string]interface{})["stat"].(float64)
+		rubrikNodeNetworkTransmitted.WithLabelValues(clusterName, thisNode.(string)).Set(thisTxStat)
 	}
 }

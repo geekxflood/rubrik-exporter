@@ -2,8 +2,9 @@ package stats
 
 import (
 	"log"
-	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
 var (
@@ -36,15 +37,15 @@ func init() {
 
 // Get ...
 func GetSlaComplianceStats(rubrik *rubrikcdm.Credentials, clusterName string) {
-	reportData,err := rubrik.Get("internal","/report?report_template=SlaComplianceSummary&report_type=Canned", 60) // get our sla compliance summary report
+	reportData, err := rubrik.Get("internal", "/report?report_template=SlaComplianceSummary&report_type=Canned", 60) // get our sla compliance summary report
 	if err != nil {
-		log.Printf("Error from stats.GetSlaComplianceStats: ",err)
+		log.Printf("Error from stats.GetSlaComplianceStats: %v", err)
 	}
 	reports := reportData.(map[string]interface{})["data"].([]interface{})
 	reportID := reports[0].(map[string]interface{})["id"]
-	chartData,err := rubrik.Get("internal","/report/"+reportID.(string)+"/chart?chart_id=chart0") // get our chart for the report
+	chartData, err := rubrik.Get("internal", "/report/"+reportID.(string)+"/chart?chart_id=chart0") // get our chart for the report
 	if err != nil {
-		log.Printf("Error from stats.GetSlaComplianceStats: ",err)
+		log.Printf("Error from stats.GetSlaComplianceStats: %v", err)
 		return
 	}
 	for _, v := range chartData.([]interface{}) {

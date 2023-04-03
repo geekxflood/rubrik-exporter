@@ -2,8 +2,9 @@ package stats
 
 import (
 	"log"
-	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
+
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/rubrikinc/rubrik-sdk-for-go/rubrikcdm"
 )
 
 var (
@@ -86,9 +87,9 @@ func init() {
 
 // GetStorageSummaryStats ...
 func GetStorageSummaryStats(rubrik *rubrikcdm.Credentials, clusterName string) {
-	storageStats,err := rubrik.Get("internal","/stats/system_storage", 60)
+	storageStats, err := rubrik.Get("internal", "/stats/system_storage", 60)
 	if err != nil {
-		log.Printf("Error from stats.GetStorageSummaryStats: ",err)
+		log.Printf("Error from stats.GetStorageSummaryStats: %v", err)
 		return
 	}
 	// get total storage stat
@@ -119,9 +120,9 @@ func GetStorageSummaryStats(rubrik *rubrikcdm.Credentials, clusterName string) {
 
 // GetRunwayRemaining ...q
 func GetRunwayRemaining(rubrik *rubrikcdm.Credentials, clusterName string) {
-	runwayRemaining,err := rubrik.Get("internal","/stats/runway_remaining", 60)
+	runwayRemaining, err := rubrik.Get("internal", "/stats/runway_remaining", 60)
 	if err != nil {
-		log.Printf("Error from stats.GetRunwayRemaining: ",err)
+		log.Printf("Error from stats.GetRunwayRemaining: %v", err)
 		return
 	}
 	// get runway remaining stat
